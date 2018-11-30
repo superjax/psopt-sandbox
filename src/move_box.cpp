@@ -106,6 +106,7 @@ TEST(MoveBox, SingleWindow)
 
   x_guess(1,colon()) = linspace(0,1,nnodes);
   x_guess(2,colon()) = linspace(1,1,nnodes);
+  x_guess(2,colon()) = linspace(1,1,nnodes);
 
   problem.phases(1).guess.controls = zeros(2,nnodes);
   problem.phases(1).guess.states = x_guess;
@@ -122,8 +123,10 @@ TEST(MoveBox, SingleWindow)
   algorithm.mesh_refinement             = "automatic";
   algorithm.mr_max_increment_factor     = 0.3;
   algorithm.defect_scaling              = "jacobian-based";
+  algorithm.print_level                 = 0;
 
   psopt(solution, problem, algorithm);
+
 
   DMatrix x = solution.get_states_in_phase(1);
   DMatrix u = solution.get_controls_in_phase(1);
