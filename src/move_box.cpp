@@ -17,7 +17,7 @@ public:
   }
 };
 
-class autoLinkage
+class autoLinkage : public LinkageFunctor
 {
 public:
   autoLinkage(int id_0, int id_1) : id_0_{id_0}, id_1_{id_1} {}
@@ -168,11 +168,6 @@ TEST(MoveBox, SingleWindow)
   plot(t,x(1,colon()),problem.name+": state", "time (s)", "state", "x1");
   plot(t,x(2,colon()),problem.name+": state", "time (s)", "state", "x2");
   plot(t,u(1,colon()),problem.name+": control","time (s)", "control", "u1");
-}
-
-TEST (MoveBox, MultiWindowTest)
-{
-
 }
 
 
