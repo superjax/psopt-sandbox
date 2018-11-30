@@ -2,8 +2,22 @@
 
 #include "psopt.h"
 
-adouble emptyEndpoint(adouble* initial_states, adouble* final_states,
-                      adouble* parameters,adouble& t0, adouble& tf,
-                      adouble* xad, int iphase, Workspace* workspace);
+class EmptyEndpointCost : public EndpointFunctor
+{
+public:
+  adouble operator()(adouble* initial_states, adouble* final_states,
+                     adouble* parameters,adouble& t0, adouble& tf,
+                     adouble* xad, int iphase, Workspace* workspace)
+  {
+    return 0;
+  }
+};
 
-void emptyLinkage(adouble* emptyLinkage, adouble* xad, Workspace* workspace);
+class EmptyLinkage : public LinkageFunctor
+{
+public:
+  void operator()( adouble* linkages, adouble* xad, Workspace* workspace)
+  {
+    return;
+  }
+};

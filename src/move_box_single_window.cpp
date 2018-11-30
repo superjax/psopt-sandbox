@@ -5,22 +5,6 @@
 
 #include "move_box.h"
 
-void EndpointConstraint(adouble* e, adouble* initial_states, adouble* final_states,
-            adouble* parameters,adouble& t0, adouble& tf, adouble* xad,
-            int iphase, Workspace* workspace)
-
-{
-   adouble x1i = initial_states[0];
-   adouble x2i = initial_states[1];
-   adouble x1f = final_states[0];
-   adouble x2f = final_states[1];
-
-   e[0] = x1i;
-   e[1] = x2i;
-   e[2] = x1f;
-   e[3] = x2f;
-}
-
 TEST(DISABLED_MoveBox, SingleWindow)
 {
   Alg  algorithm;
@@ -50,11 +34,11 @@ TEST(DISABLED_MoveBox, SingleWindow)
   problem.phases(1).bounds.lower.EndTime      = 1.0;
   problem.phases(1).bounds.upper.EndTime      = 1.0;
 
-  problem.integrand_cost = &MoveBoxCostFunction;
-  problem.endpoint_cost	= &emptyEndpoint;
-  problem.dae = &MoveBoxDynamicConstraint;
-  problem.events = &EndpointConstraint;
-  problem.linkages = &emptyLinkage;
+  problem.integrand_cost = new MoveBoxCost();
+  problem.endpoint_cost	= new EmptyEndpointCost();
+  problem.dae = new BlockDynamics();
+  problem.events = new MoveBoxEndpointConstraints();
+  problem.linkages = new EmptyLinkage();
 
   int nnodes = problem.phases(1).nodes(1);
 

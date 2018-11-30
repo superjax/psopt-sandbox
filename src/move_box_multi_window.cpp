@@ -5,22 +5,6 @@
 
 #include "move_box.h"
 
-void WaypointConstraint(adouble* e, adouble* initial_states, adouble* final_states,
-            adouble* parameters,adouble& t0, adouble& tf, adouble* xad,
-            int iphase, Workspace* workspace)
-
-{
-   adouble x1i = initial_states[0];
-   adouble x2i = initial_states[1];
-   adouble x1f = final_states[0];
-   adouble x2f = final_states[1];
-
-   e[0] = x1i;
-   e[1] = x2i;
-   e[2] = x1f;
-   e[3] = x2f;
-}
-
 TEST(DISABLED_MoveBox, MultiWindow)
 {
   Alg  algorithm;
@@ -85,11 +69,11 @@ TEST(DISABLED_MoveBox, MultiWindow)
     problem.phases(i).guess.time = linspace(i-1, i, nnodes);
   }
 
-  problem.integrand_cost = &MoveBoxCostFunction;
-  problem.endpoint_cost	= &emptyEndpoint;
-  problem.dae = &MoveBoxDynamicConstraint;
-  problem.events = &WaypointConstraint;
-  problem.linkages = &emptyLinkage;
+  problem.integrand_cost = new MoveBoxCost();
+  problem.endpoint_cost	= new EmptyEndpointCost();
+  problem.dae = new BlockDynamics();
+  problem.events = new MoveBoxEndpointConstraints();
+  problem.linkages = new EmptyLinkage();
 
   algorithm.nlp_iter_max                = 1000;
   algorithm.nlp_tolerance               = 1.e-6;
