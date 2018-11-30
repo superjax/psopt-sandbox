@@ -18,6 +18,8 @@ include_directories(include
 
 add_executable(psopt_sandbox
     src/move_box.cpp
+    src/move_box_single_window.cpp
+    src/move_box_multi_window.cpp
     )
 target_link_libraries(psopt_sandbox
     psopt
