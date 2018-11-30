@@ -6,20 +6,20 @@
 #include "psopt.h"
 
 
-adouble endpoint_cost(adouble* initial_states, adouble* final_states,
+adouble emptyEndpoint(adouble* initial_states, adouble* final_states,
                       adouble* parameters,adouble& t0, adouble& tf,
                       adouble* xad, int iphase, Workspace* workspace)
 {
    return 0;
 }
 
-void linkages( adouble* linkages, adouble* xad, Workspace* workspace)
+void emptyLinkage( adouble* emptyLinkage, adouble* xad, Workspace* workspace)
 {
   // No linkages as this is a single phase problem
 }
 
 
-adouble integrand_cost(adouble* states, adouble* controls,
+adouble CostFunction(adouble* states, adouble* controls,
                        adouble* parameters, adouble& time, adouble* xad,
                        int iphase, Workspace* workspace)
 {
@@ -35,7 +35,7 @@ adouble integrand_cost(adouble* states, adouble* controls,
 }
 
 
-void dae(adouble* derivatives, adouble* path, adouble* states,
+void dynamicConstraint(adouble* derivatives, adouble* path, adouble* states,
          adouble* controls, adouble* parameters, adouble& time,
          adouble* xad, int iphase, Workspace* workspace)
 {
@@ -48,7 +48,7 @@ void dae(adouble* derivatives, adouble* path, adouble* states,
    derivatives[1] = u1;
 }
 
-void events(adouble* e, adouble* initial_states, adouble* final_states,
+void EndpointConstraint(adouble* e, adouble* initial_states, adouble* final_states,
             adouble* parameters,adouble& t0, adouble& tf, adouble* xad,
             int iphase, Workspace* workspace)
 
@@ -94,11 +94,11 @@ TEST(MoveBox, SingleWindow)
   problem.phases(1).bounds.lower.EndTime      = 1.0;
   problem.phases(1).bounds.upper.EndTime      = 1.0;
 
-  problem.integrand_cost = &integrand_cost;
-  problem.endpoint_cost	= &endpoint_cost;
-  problem.dae = &dae;
-  problem.events = &events;
-  problem.linkages = &linkages;
+  problem.integrand_cost = &CostFunction;
+  problem.endpoint_cost	= &emptyEndpoint;
+  problem.dae = &dynamicConstraint;
+  problem.events = &EndpointConstraint;
+  problem.linkages = &emptyLinkage;
 
   int nnodes = problem.phases(1).nodes(1);
 
