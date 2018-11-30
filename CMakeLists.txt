@@ -4,7 +4,6 @@ project(psopt_sandbox)
 find_package(Eigen3 REQUIRED)
 find_package(GTest REQUIRED)
 
-set(PSOPT_BUILD_EXAMPLES 1)
 add_subdirectory(lib/psopt-cmake)
 
 include_directories(include

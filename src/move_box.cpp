@@ -6,63 +6,96 @@
 #include "psopt.h"
 
 
-adouble endpoint_cost(adouble* initial_states, adouble* final_states,
-                      adouble* parameters,adouble& t0, adouble& tf,
-                      adouble* xad, int iphase, Workspace* workspace)
+class EmptyEndpointCost : public EndpointFunctor
 {
-   return 0;
-}
+public:
+  adouble operator()(adouble* initial_states, adouble* final_states,
+                     adouble* parameters,adouble& t0, adouble& tf,
+                     adouble* xad, int iphase, Workspace* workspace)
+  {
+    return 0;
+  }
+};
 
-void linkages( adouble* linkages, adouble* xad, Workspace* workspace)
+class autoLinkage
 {
-  // No linkages as this is a single phase problem
-}
+public:
+  autoLinkage(int id_0, int id_1) : id_0_{id_0}, id_1_{id_1} {}
 
+  void operator()(adouble* linkages, adouble* xad, Workspace* workspace)
+  {
+    int index = 0;
+    auto_link(linkages, &index, xad, id_0_+1, id_1_+1, workspace);
+  }
 
-adouble integrand_cost(adouble* states, adouble* controls,
-                       adouble* parameters, adouble& time, adouble* xad,
-                       int iphase, Workspace* workspace)
+  int id_0_;
+  int id_1_;
+};
+
+class EmptyLinkage : public LinkageFunctor
 {
+public:
+  void operator()( adouble* linkages, adouble* xad, Workspace* workspace)
+  {
+    return;
+  }
+};
+
+class CostFactor : public CostFunctor
+{
+public:
+  CostFactor(){}
+  adouble operator()(adouble* states, adouble* controls,
+                     adouble* parameters, adouble& time, adouble* xad,
+                     int iphase, Workspace* workspace)
+  {
     adouble x1 = states[0];
     adouble x2 = states[1];
     adouble u1 = controls[0];
 
     adouble L;
-
     L = ( x1*x1 + x2*x2 ) + ( u1*u1 );
 
     return  L;
-}
+  }
+};
 
-
-void dae(adouble* derivatives, adouble* path, adouble* states,
-         adouble* controls, adouble* parameters, adouble& time,
-         adouble* xad, int iphase, Workspace* workspace)
+class BlockDynamics : public DaeFunctor
 {
+public:
+  void  operator()(adouble* derivatives, adouble* path, adouble* states,
+                   adouble* controls, adouble* parameters, adouble& time,
+                   adouble* xad, int iphase, Workspace* workspace)
+  {
     adouble x1 = states[0];
     adouble x2 = states[1];
     adouble u1 = controls[0];
     adouble t  = time;
 
-   derivatives[0] = x2;
-   derivatives[1] = u1;
-}
+    derivatives[0] = x2;
+    derivatives[1] = u1;
+  }
+};
 
-void events(adouble* e, adouble* initial_states, adouble* final_states,
-            adouble* parameters,adouble& t0, adouble& tf, adouble* xad,
-            int iphase, Workspace* workspace)
-
+class EndpointConstraints : public EventFunctor
 {
-   adouble x1i = initial_states[0];
-   adouble x2i = initial_states[1];
-   adouble x1f = final_states[0];
-   adouble x2f = final_states[1];
+public:
+  void operator()(adouble* e, adouble* initial_states, adouble* final_states,
+                  adouble* parameters,adouble& t0, adouble& tf, adouble* xad,
+                  int iphase, Workspace* workspace)
 
-   e[0] = x1i;
-   e[1] = x2i;
-   e[2] = x1f;
-   e[3] = x2f;
-}
+  {
+    adouble x1i = initial_states[0];
+    adouble x2i = initial_states[1];
+    adouble x1f = final_states[0];
+    adouble x2f = final_states[1];
+
+    e[0] = x1i;
+    e[1] = x2i;
+    e[2] = x1f;
+    e[3] = x2f;
+  }
+};
 
 
 TEST(MoveBox, SingleWindow)
@@ -94,11 +127,11 @@ TEST(MoveBox, SingleWindow)
   problem.phases(1).bounds.lower.EndTime      = 1.0;
   problem.phases(1).bounds.upper.EndTime      = 1.0;
 
-  problem.integrand_cost = &integrand_cost;
-  problem.endpoint_cost	= &endpoint_cost;
-  problem.dae = &dae;
-  problem.events = &events;
-  problem.linkages = &linkages;
+  problem.integrand_cost = new CostFactor();
+  problem.endpoint_cost	= new EmptyEndpointCost();
+  problem.dae = new BlockDynamics();
+  problem.events = new EndpointConstraints();
+  problem.linkages = new EmptyLinkage();
 
   int nnodes = problem.phases(1).nodes(1);
 
@@ -135,6 +168,11 @@ TEST(MoveBox, SingleWindow)
   plot(t,x(1,colon()),problem.name+": state", "time (s)", "state", "x1");
   plot(t,x(2,colon()),problem.name+": state", "time (s)", "state", "x2");
   plot(t,u(1,colon()),problem.name+": control","time (s)", "control", "u1");
+}
+
+TEST (MoveBox, MultiWindowTest)
+{
+
 }
 
 
