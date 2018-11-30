@@ -1,3 +1,6 @@
 [submodule "lib/psopt-cmake"]
 	path = lib/psopt-cmake
 	url = git@github.com:superjax/psopt-cmake.git
+[submodule "lib/geometry"]
+	path = lib/geometry
+	url = git@github.com:superjax/geometry

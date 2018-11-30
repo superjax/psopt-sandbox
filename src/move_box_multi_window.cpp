@@ -21,7 +21,7 @@ void WaypointConstraint(adouble* e, adouble* initial_states, adouble* final_stat
    e[3] = x2f;
 }
 
-TEST(MoveBox, MultiWindow)
+TEST(DISABLED_MoveBox, MultiWindow)
 {
   Alg  algorithm;
   Sol  solution;
@@ -85,9 +85,9 @@ TEST(MoveBox, MultiWindow)
     problem.phases(i).guess.time = linspace(i-1, i, nnodes);
   }
 
-  problem.integrand_cost = &CostFunction;
+  problem.integrand_cost = &MoveBoxCostFunction;
   problem.endpoint_cost	= &emptyEndpoint;
-  problem.dae = &dynamicConstraint;
+  problem.dae = &MoveBoxDynamicConstraint;
   problem.events = &WaypointConstraint;
   problem.linkages = &emptyLinkage;
 

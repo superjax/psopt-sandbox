@@ -50,9 +50,9 @@ TEST(DISABLED_MoveBox, SingleWindow)
   problem.phases(1).bounds.lower.EndTime      = 1.0;
   problem.phases(1).bounds.upper.EndTime      = 1.0;
 
-  problem.integrand_cost = &CostFunction;
+  problem.integrand_cost = &MoveBoxCostFunction;
   problem.endpoint_cost	= &emptyEndpoint;
-  problem.dae = &dynamicConstraint;
+  problem.dae = &MoveBoxDynamicConstraint;
   problem.events = &EndpointConstraint;
   problem.linkages = &emptyLinkage;
 

@@ -1,11 +1,13 @@
 #pragma once
 
+
+#include "psopt.h"
 #include "common.h"
 
-adouble MoveBoxCostFunction(adouble* states, adouble* controls,
+adouble CostFunction(adouble* states, adouble* controls,
                        adouble* parameters, adouble& time, adouble* xad,
                        int iphase, Workspace* workspace);
 
-void MoveBoxDynamicConstraint(adouble* derivatives, adouble* path, adouble* states,
+void dynamicConstraint(adouble* derivatives, adouble* path, adouble* states,
          adouble* controls, adouble* parameters, adouble& time,
          adouble* xad, int iphase, Workspace* workspace);
